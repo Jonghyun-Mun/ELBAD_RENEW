@@ -100,19 +100,17 @@ router.get("/user/:user_id", (req, res) => {
     );
 });
 
-// @route   POST api/profile
+// @route   POST api/profile/youtube_profile
 // @desc    Create or edit user profile
 // @access  Private
 router.post(
-  "/",
+  "/youtube_profile",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     console.log(req.body);
     const { errors, isValid } = validateProfileInput(req.body);
     // Check Validation
     if (!isValid) {
-      console.log("aa");
-      console.log(errors);
       // Return any errors with 400 status
       return res.status(400).json(errors);
     }
@@ -120,7 +118,7 @@ router.post(
     // Get fields
     const profileFields = {};
     profileFields.user = req.user.id;
-    if (req.body.handle) profileFields.handle = req.body.handle;
+    //    if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.total_views) profileFields.total_views = req.body.total_views;
     if (req.body.subscribers) profileFields.subscribers = req.body.subscribers;
     if (req.body.age_group) profileFields.age_group = req.body.age_group;

@@ -135,10 +135,41 @@ router.get(
       user_type: req.user.user_type,
       total_views: req.user.total_views,
       subscribers: req.user.subscribers,
-      age_groups: req.user.age_groups,
+      age_group: req.user.age_group,
       country: req.user.country,
       gender: req.user.gender
     });
   }
 );
+// @route  GET api/users/get_object_id
+// @desc   Return current user id
+// @access Private
+router.get(
+  "/get_object_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.json({
+      id: req.user.id
+    });
+  }
+);
+
+/* 크리에이터 리스트 캠페인 리스트 개발
+// @route  GET api/users/get_creator_list
+// @desc   Return Creator List
+// @access Public
+router.get("/get_creator_list", (req, res) => {
+  User.findOne({ user_type: "creator" }).then(user => {
+    res.json({
+      creator_nickname: req.user.creator_nickname,
+      creator_photo: req.user.creator_photo
+    });
+  });
+});
+
+// @route  GET api/users/get_advertiser_ist
+// @desc   Return Advertiser List
+// @access Public
+router.get();
+*/
 module.exports = router;
