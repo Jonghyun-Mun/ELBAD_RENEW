@@ -81,7 +81,7 @@ router.get("/handle/:handle", (req, res) => {
 // @route   Get api/profile/user/:user_id
 // @desc    Get profile by user ID
 // @access  Public
-g;
+
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
 
@@ -107,10 +107,12 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log(req.body);
     const { errors, isValid } = validateProfileInput(req.body);
-
     // Check Validation
     if (!isValid) {
+      console.log("aa");
+      console.log(errors);
       // Return any errors with 400 status
       return res.status(400).json(errors);
     }
@@ -119,11 +121,28 @@ router.post(
     const profileFields = {};
     profileFields.user = req.user.id;
     if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.total_views) profileFields.total_views = req.body.total_views;
+    if (req.body.subscribers) profileFields.subscribers = req.body.subscribers;
+    if (req.body.age_group) profileFields.age_group = req.body.age_group;
+    if (req.body.country) profileFields.country = req.body.country;
+    if (req.body.gender) profileFields.gender = req.body.gender;
+
+    /*
+    // Skills - Spilt into array
+    if (typeof req.body.age_group !== "undefined") {
+      profileFields.age_group = req.body.age_group.split(",");
+    }
+    if (typeof req.body.country !== "undefined") {
+      profileFields.country = req.body.country.split(",");
+    }
+    if (typeof req.body.gender !== "undefined") {
+      profileFields.gender = req.body.gender.split(",");
+    }
+    */
 
     Profile.findOne({ user: req.user.id }).then(profile => {
       if (profile) {
         // Update
-
         Profile.findOneAndUpdate(
           { user: req.user.id },
           { $set: profileFields },
@@ -166,7 +185,7 @@ router.post(
       const newYoutube = {
         total_views: req.body.total_views,
         subscribers: req.body.subscribers,
-        age_groups: req.body.age_groups,
+        age_group: req.body.age_group,
         country: req.body.country,
         gender: req.body.gender
       };
@@ -174,6 +193,45 @@ router.post(
       // Add to youtube array
       profile.youtube_channel_information.unshift(newYoutube);
       profile.save().then(profile => res.json(profile));
+    });
+  }
+);
+
+// @route   DELETE api/profile/youtube_channel/:youtube_id
+// @desc    Delete youtube_info from profile
+// @access  Private
+router.delete(
+  "/youtube_channel/:youtube_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        // Get remove index
+        const removeIndex = profile.youtube_channel_information
+          .map(item => item.id)
+          .indexOf(req.params.youtube_id);
+
+        // Splice out of array
+        profile.experience.splice(removeIndex, 1);
+
+        // Save
+        profile.save().then(profile => res.json(profile));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+// @route   DELETE api/profile
+// @desc    Delete user and profile
+// @access  Private
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOneAndRemove({ user: req.user.id }).then(() => {
+      User.findOneAndRemove({ _id: req.user.id }).then(() =>
+        res.json({ success: true })
+      );
     });
   }
 );

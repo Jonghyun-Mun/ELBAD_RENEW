@@ -4,58 +4,46 @@ const isEmpty = require("./is-empty");
 module.exports = function validateProfileInput(data) {
   let errors = {};
 
-  data.handle = !isEmpty(data.handle) ? data.handle : " ";
-  /*
-  data.status = !isEmpty(data.status) ? data.status : " ";
-  data.skills = !isEmpty(data.skills) ? data.skills : " ";
-*/
+  data.handle = !isEmpty(data.handle) ? data.handle : "";
+  data.total_views = !isEmpty(data.total_views) ? data.total_views : "";
+  data.subscribers = !isEmpty(data.subscribers) ? data.subscribers : "";
+  data.age_group = !isEmpty(data.age_group) ? data.age_group : "";
+  data.country = !isEmpty(data.country) ? data.country : "";
+  data.gender = !isEmpty(data.gender) ? data.gender : "";
 
   if (!Validator.isLength(data.handle, { min: 2, max: 40 })) {
-    errors.handle = "Handle needs to between 2 and 40 characters";
+    errors.handle = "Handle needs to between 2 and 4 characters";
   }
 
   if (Validator.isEmpty(data.handle)) {
     errors.handle = "Profile handle is required";
   }
-  /*
-  if (Validator.isEmpty(data.status)) {
-    errors.status = "Status field is required";
-  }
 
-  if (Validator.isEmpty(data.skills)) {
-    errors.skills = "skills field is required";
+  /*
+  if (Validator.isEmpty(data.total_views)) {
+    errors.total_views = "총 조회수 데이터를 가져올 수 없습니다";
   }
-*/
-  if (!isEmpty(data.website)) {
-    if (!Validator.isURL(data.website)) {
-      errors.website = "Not a valid URL";
-    }
+  console.log("d");
+
+  if (Validator.isEmpty(data.subscribers)) {
+    errors.subscribers = "구독자수 데이터를 가져올 수 없습니다";
   }
-  if (!isEmpty(data.youtube)) {
-    if (!Validator.isURL(data.youtube)) {
-      errors.youtube = "Not a valid URL";
-    }
+  console.log("e");
+
+  if (Validator.isEmpty(data.age_group)) {
+    errors.age_group = "구독 연령층 데이터를 가져올 수 없습니다";
   }
-  if (!isEmpty(data.twitter)) {
-    if (!Validator.isURL(data.twitter)) {
-      errors.twitter = "Not a valid URL";
-    }
+  console.log("f");
+
+  if (Validator.isEmpty(data.country)) {
+    errors.country = "조회 국가 데이터를 가져올 수 없습니다";
   }
-  if (!isEmpty(data.facebook)) {
-    if (!Validator.isURL(data.facebook)) {
-      errors.facebook = "Not a valid URL";
-    }
+  console.log("g");
+
+  if (Validator.isEmpty(data.gender)) {
+    errors.gender = "조회자 성별 데이터를 가져올 수 없습니다";
   }
-  if (!isEmpty(data.linkedin)) {
-    if (!Validator.isURL(data.linkedin)) {
-      errors.linkedin = "Not a valid URL";
-    }
-  }
-  if (!isEmpty(data.instagram)) {
-    if (!Validator.isURL(data.instagram)) {
-      errors.instagram = "Not a valid URL";
-    }
-  }
+  */
   return {
     errors,
     isValid: isEmpty(errors)
