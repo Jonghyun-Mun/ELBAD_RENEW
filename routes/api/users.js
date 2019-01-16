@@ -8,9 +8,13 @@ const passport = require("passport");
 // Load Input Validation
 const validateRegisterInput = require("../../Validation/register");
 const validateLoginInput = require("../../validation/login");
+const validateReviseInput = require("../../Validation/revise");
 
 // Load User model
 const User = require("../../models/User");
+
+// Load Profile model
+const Profile = require("../../models/Profile");
 
 // @route  GET api/Users/test
 // @desc   Tests user route
@@ -133,11 +137,18 @@ router.get(
       name: req.user.name,
       email: req.user.email,
       user_type: req.user.user_type,
-      total_views: req.user.total_views,
-      subscribers: req.user.subscribers,
-      age_group: req.user.age_group,
-      country: req.user.country,
-      gender: req.user.gender
+      meeting_region: req.user.meeting_region,
+      cell_phone_number: req.user.cell_phone_number,
+      company_name: req.user.company_name,
+      company_introduction: req.user.company_introduction,
+      company_homepage: req.user.company_homepage,
+      company_photo: req.user.company_photo,
+      company_type: req.user.company_type,
+      creator_nickname: req.user.creator_nickname,
+      creator_introduction: req.user.creator_introduction,
+      creator_photo: req.user.creator_photo,
+      product_delivery_address: req.user.product_delivery_address,
+      product_delivery_recipient: req.user.product_delivery_recipient
     });
   }
 );
@@ -150,6 +161,67 @@ router.get(
   (req, res) => {
     res.json({
       id: req.user.id
+    });
+  }
+);
+
+// @route Put api/users/edit_user
+// @desc Revise users data
+// @access Private
+router.put(
+  "/edit_user",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateReviseInput(req.body);
+    //Check Validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const reviseFields = {};
+    // Common
+    reviseFields.user = req.user.id;
+    if (req.body.name) reviseFields.name = req.body.name;
+    if (req.body.password) reviseFields.password = req.body.password;
+    if (req.body.password2) reviseFields.password2 = req.body.password2;
+    if (req.body.meeting_region)
+      reviseFields.meeting_region = req.body.meeting_region;
+    if (req.body.cell_phone_number)
+      reviseFields.cell_phone_number = req.body.cell_phone_number;
+    // Advertiser
+    if (req.body.company_name)
+      reviseFields.company_name = req.body.company_name;
+    if (req.body.company_introduction)
+      reviseFields.company_introduction = req.body.company_introduction;
+    if (req.body.company_homepage)
+      reviseFields.company_homepage = req.body.company_homepage;
+    if (req.body.company_photo)
+      reviseFields.company_photo = req.body.company_photo;
+    if (req.body.company_type)
+      reviseFields.company_type = req.body.company_type;
+    // Creator
+    if (req.body.creator_nickname)
+      reviseFields.creator_nickname = req.body.creator_nickname;
+    if (req.body.creator_introduction)
+      reviseFields.creator_introduction = req.body.creator_introduction;
+    if (req.body.creator_photo)
+      reviseFields.creator_photo = req.body.creator_photo;
+    if (req.body.product_delivery_address)
+      reviseFields.product_delivery_address = req.body.product_delivery_address;
+    if (req.body.product_delivery_recipient)
+      reviseFields.product_delivery_recipient =
+        req.body.product_delivery_recipient;
+
+    // Update
+
+    User.findOne({ _id: req.user.id }).then(user => {
+      if (user) {
+        User.findOneAndUpdate(
+          { _id: req.user.id },
+          { $set: reviseFields },
+          { new: true }
+        ).then(user => res.json(user));
+      }
     });
   }
 );

@@ -1,12 +1,10 @@
 const Validator = require("validator");
 const isEmpty = require("./is-empty");
 
-module.exports = function validateRegisterInput(data) {
+module.exports = function validateReviseInput(data) {
   let errors = {};
 
   //Common
-  data.user_type = !isEmpty(data.user_type) ? data.user_type : "";
-  data.email = !isEmpty(data.email) ? data.email : "";
   data.name = !isEmpty(data.name) ? data.name : "";
   data.password = !isEmpty(data.password) ? data.password : "";
   data.password2 = !isEmpty(data.password2) ? data.password2 : "";
@@ -37,9 +35,7 @@ module.exports = function validateRegisterInput(data) {
   data.product_delivery_recipient = !isEmpty(data.product_delivery_recipient)
     ? data.product_delivery_recipient
     : "";
-  if (Validator.isEmpty(data.user_type)) {
-    errors.user_type = "사용자 유형을 선택해 주십시오";
-  }
+
   // Advertiser
   if (Validator.equals(data.user_type, "advertiser")) {
     if (Validator.isEmpty(data.company_name)) {
@@ -50,12 +46,6 @@ module.exports = function validateRegisterInput(data) {
     }
     if (Validator.isEmpty(data.company_type)) {
       errors.company_type = "사업자 유형을 입력해 주십시오";
-    }
-    if (!Validator.isEmail(data.email)) {
-      errors.email = "유효하지 않은 이메일입니다";
-    }
-    if (Validator.isEmpty(data.email)) {
-      errors.email = "이메일을 입력해 주십시오";
     }
     if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
       errors.name = "이름은 반드시 2자 이상 30자 이하여야 합니다";
@@ -101,12 +91,6 @@ module.exports = function validateRegisterInput(data) {
       errors.product_delivery_recipient = "제품 배송 수령인을 입력해 주십시오";
     }
 
-    if (Validator.isEmpty(data.email)) {
-      errors.email = "이메일을 입력해 주십시오";
-    }
-    if (!Validator.isEmail(data.email)) {
-      errors.email = "유효하지 않은 이메일입니다";
-    }
     if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
       errors.name = "이름은 반드시 2자 이상 30자 이하여야 합니다";
     }

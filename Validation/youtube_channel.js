@@ -6,7 +6,7 @@ module.exports = function validateYoutubeChannelInput(data) {
 
   data.total_views = !isEmpty(data.total_views) ? data.total_views : "";
   data.subscribers = !isEmpty(data.subscribers) ? data.subscribers : "";
-  data.age_groups = !isEmpty(data.age_groups) ? data.age_groups : "";
+  data.age_group = !isEmpty(data.age_group) ? data.age_group : "";
   data.country = !isEmpty(data.country) ? data.country : "";
   data.gender = !isEmpty(data.gender) ? data.gender : "";
 
@@ -18,8 +18,8 @@ module.exports = function validateYoutubeChannelInput(data) {
     errors.subscribers = "구독자수 데이터를 가져올 수 없습니다";
   }
 
-  if (Validator.isEmpty(data.age_groups)) {
-    errors.age_groups = "구독 연령층 데이터를 가져올 수 없습니다";
+  if (Validator.isEmpty(data.age_group)) {
+    errors.age_group = "구독 연령층 데이터를 가져올 수 없습니다";
   }
   if (Validator.isEmpty(data.country)) {
     errors.country = "조회 국가 데이터를 가져올 수 없습니다";

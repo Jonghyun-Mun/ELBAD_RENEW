@@ -118,7 +118,7 @@ router.post(
     // Get fields
     const profileFields = {};
     profileFields.user = req.user.id;
-    //    if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.total_views) profileFields.total_views = req.body.total_views;
     if (req.body.subscribers) profileFields.subscribers = req.body.subscribers;
     if (req.body.age_group) profileFields.age_group = req.body.age_group;
