@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
 
+const multer = require("multer");
+
 // Load Input Validation
 const validateRegisterInput = require("../../Validation/register");
 const validateLoginInput = require("../../validation/login");
@@ -15,6 +17,34 @@ const User = require("../../models/User");
 
 // Load Profile model
 const Profile = require("../../models/Profile");
+
+// Image upload function
+var upload = function(req, res) {
+  var deferred = Q.defer();
+  var imagePath = "public/images";
+  var storage = multer.diskStorage({
+    // 서버에 저장할 폴더
+    destination: function(req, file, cb) {
+      cb(null, imagePath);
+    },
+
+    // 서버에 저장할 파일 명
+    filename: function(req, file, cb) {
+      file.uploadedFile = {
+        name: req.params.filename,
+        ext: file.mimetype.split("/")[1]
+      };
+      cb(null, file.uploadedFile.name + "." + file.uploadedFile.ext);
+    }
+  });
+
+  var upload = multer({ storage: storage }).single("file");
+  upload(req, res, function(err) {
+    if (err) deferred.reject();
+    else deferred.resolve(req.file.uploadedFile);
+  });
+  return deferred.promise;
+};
 
 // @route  GET api/Users/test
 // @desc   Tests user route
@@ -44,7 +74,6 @@ router.post("/register", (req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        password2: req.body.password2,
         meeting_region: req.body.meeting_region,
         cell_phone_number: req.body.cell_phone_number,
         // Advertiser
@@ -183,9 +212,8 @@ router.put(
     reviseFields.user = req.user.id;
     if (req.body.name) reviseFields.name = req.body.name;
     if (req.body.password) reviseFields.password = req.body.password;
-    if (req.body.password2) reviseFields.password2 = req.body.password2;
-    if (req.body.meeting_region)
-      reviseFields.meeting_region = req.body.meeting_region;
+
+    reviseFields.meeting_region = req.body.meeting_region;
     if (req.body.cell_phone_number)
       reviseFields.cell_phone_number = req.body.cell_phone_number;
     // Advertiser
@@ -212,6 +240,17 @@ router.put(
       reviseFields.product_delivery_recipient =
         req.body.product_delivery_recipient;
 
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(reviseFields.password, salt, (err, hash) => {
+        if (err) throw err;
+        reviseFields.password = hash;
+        console.log(reviseFields.password);
+        //reviseFields
+        //  .save()
+        //  .then(user => res.json(user))
+        //  .catch(err => console.log(err));
+      });
+    });
     // Update
 
     User.findOne({ _id: req.user.id }).then(user => {
@@ -225,6 +264,19 @@ router.put(
     });
   }
 );
+
+// @router Post api/users/images
+
+router.post("/image", function(req, res, next) {
+  upload(req, res).then(
+    function(file) {
+      res.json(file);
+    },
+    function(err) {
+      res.send(500, err);
+    }
+  );
+});
 
 /* 크리에이터 리스트 캠페인 리스트 개발
 // @route  GET api/users/get_creator_list

@@ -234,4 +234,36 @@ router.delete(
   }
 );
 
+// 크리에이터 리스트
+// @route  GET api/profile/get_creator_list
+// @desc   Return Creator List
+// @access Public
+router.get("/get_creator_list", (req, res) => {
+  console.log(req.profile);
+  console.log(req.user);
+  Profile.findOne({ user: req.user.id }).then(profile =>
+    User.findOne({ user_type: "creator" }).then(user => {
+      res.json({
+        email: req.user.email,
+        name: req.user.name,
+        meeting_region: req.user.meeting_region,
+        cell_phone_number: req.user.cell_phone_number,
+
+        creator_nickname: req.user.creator_nickname,
+        creator_photo: req.user.creator_photo,
+        creator_introduction: req.user.creator_introduction,
+        creator_photo: req.user.creator_photo,
+        product_delivery_address: req.user.product_delivery_address,
+        product_delivery_recipient: req.user.product_delivery_recipient,
+
+        total_views: req.profile.total_views,
+        subscribers: req.profile.subscribers,
+        age_group: req.profile.age_group,
+        country: req.profile.country,
+        gender: req.profile.gender
+      });
+    })
+  );
+});
+
 module.exports = router;
