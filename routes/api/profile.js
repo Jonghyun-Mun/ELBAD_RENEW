@@ -40,22 +40,60 @@ router.get(
   }
 );
 
-// @route   Get api/profile/all
+// @route   GET api/profile/all
 // @desc    Get all profiles
 // @access  Public
 router.get("/all", (req, res) => {
   const errors = {};
+
   Profile.find()
-    .populate("user", ["name"])
+    .populate("user", ["name", "avatar"])
     .then(profiles => {
       if (!profiles) {
         errors.noprofile = "There are no profiles";
-        return res.status(404).json();
+        return res.status(404).json(errors);
       }
 
       res.json(profiles);
     })
     .catch(err => res.status(404).json({ profile: "There are no profiles" }));
+});
+
+// @route   Get api/profile/creator
+// @desc    Get all profiles
+// @access  Public
+router.get("/creator", (req, res) => {
+  const errors = {};
+  User.find(
+    { user_type: "creator" },
+    {
+      _id: 1,
+      user_type: 1,
+      name: 1,
+      email: 1,
+      meeting_region: 1,
+      cell_phone_number: 1,
+      creator_nickname: 1,
+      creator_introduction: 1,
+      creator_photo: 1,
+      product_delivery_address: 1,
+      product_delivery_recipient: 1
+    }
+  ).then(users => {
+    Profile.find()
+      .then(profiles => {
+        if (!profiles) {
+          errors.noprofile = "There are no profiles";
+          return res.status(404).json(errors);
+        }
+        if (!users) {
+          errors.nouser = "there are no creators";
+          return res.status(404).json(errors);
+        }
+        res.json({ profiles, users });
+      })
+      .catch(err => res.status(404).json({ users: "there is no users" }));
+  });
 });
 
 // @route   Get api/profile/handle/:handle
@@ -239,31 +277,28 @@ router.delete(
 // @desc   Return Creator List
 // @access Public
 router.get("/get_creator_list", (req, res) => {
-  console.log(req.profile);
-  console.log(req.user);
-  Profile.findOne({ user: req.user.id }).then(profile =>
-    User.findOne({ user_type: "creator" }).then(user => {
-      res.json({
-        email: req.user.email,
-        name: req.user.name,
-        meeting_region: req.user.meeting_region,
-        cell_phone_number: req.user.cell_phone_number,
+  //  Profile.findOne({ user: req.user.id }).then(profile =>
+  User.findOne({ user_type: "creator" }).then(user => {
+    res.json({
+      email: req.user.email,
+      name: req.user.name,
+      meeting_region: req.user.meeting_region,
+      cell_phone_number: req.user.cell_phone_number,
 
-        creator_nickname: req.user.creator_nickname,
-        creator_photo: req.user.creator_photo,
-        creator_introduction: req.user.creator_introduction,
-        creator_photo: req.user.creator_photo,
-        product_delivery_address: req.user.product_delivery_address,
-        product_delivery_recipient: req.user.product_delivery_recipient,
-
+      creator_nickname: req.user.creator_nickname,
+      creator_photo: req.user.creator_photo,
+      creator_introduction: req.user.creator_introduction,
+      creator_photo: req.user.creator_photo,
+      product_delivery_address: req.user.product_delivery_address,
+      product_delivery_recipient: req.user.product_delivery_recipient
+      /*
         total_views: req.profile.total_views,
         subscribers: req.profile.subscribers,
         age_group: req.profile.age_group,
         country: req.profile.country,
-        gender: req.profile.gender
-      });
-    })
-  );
+        gender: req.profile.gender */
+    });
+  });
 });
 
 module.exports = router;
