@@ -3,13 +3,16 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const cors = require("cors");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
-//const posts = require("./routes/api/posts");
+const posts = require("./routes/api/posts");
 
 const app = express();
 
+// Server - Client
 app.use(cors());
 
 // Body parser middleware
@@ -34,7 +37,7 @@ require("./config/passport")(passport);
 // Use Routes
 app.use("/api/users", users);
 app.use("/api/profile", profile);
-//app.use("/api/posts", posts);
+app.use("/api/posts", posts);
 
 const port = process.env.PORT || 4000;
 
