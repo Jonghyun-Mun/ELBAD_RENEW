@@ -8,6 +8,35 @@ const passport = require("passport");
 // Image upload setting
 const multer = require("multer");
 
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, "./uploads/");
+  },
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // reject a file
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("이미지 파일은 jpg, jpeg, png 파일만 가능합니다."), false);
+  }
+};
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
+
 // Load Input Validation
 const validateRegisterInput = require("../../Validation/register");
 const validateLoginInput = require("../../validation/login");
@@ -19,12 +48,6 @@ const User = require("../../models/User");
 // Load Profile model
 const Profile = require("../../models/Profile");
 
-// Uploading files
-
-// @route POST api/users/creator_photo
-// @desc upload creator photo profile
-// @access Public
-
 // @route  GET api/Users/test
 // @desc   Tests user route
 // @access Public
@@ -32,10 +55,12 @@ router.get("/test", (req, res) => {
   res.json({ msg: "Users Works" });
 });
 
+// IMAGE UPLOAD TEST
+
 // @route POST api/users/register
 // @desc Register users
 // @access Public
-router.post("/register", (req, res) => {
+router.post("/register", upload.single("creator_photo"), (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
@@ -47,6 +72,7 @@ router.post("/register", (req, res) => {
       errors.email = "이미 등록된 이메일입니다";
       return res.status(400).json(errors);
     } else {
+      console.log(req.file);
       const newUser = new User({
         // Common
         user_type: req.body.user_type,
@@ -64,10 +90,13 @@ router.post("/register", (req, res) => {
         // Creator
         creator_nickname: req.body.creator_nickname,
         creator_introduction: req.body.creator_introduction,
-        creator_photo: req.body.creator_photo,
+        creator_photo: req.file.path,
         product_delivery_address: req.body.product_delivery_address,
         product_delivery_recipient: req.body.product_delivery_recipient
       });
+
+      console.log(newUser.creator_photo);
+      console.log(newUser.company_photo);
 
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
