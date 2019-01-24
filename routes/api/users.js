@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
 
+/*
 // Image upload setting
 const multer = require("multer");
 
@@ -20,6 +21,7 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   // reject a file
   if (
+    file.mimetype === "image/gif" ||
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/png" ||
     file.mimetype === "image/jpg"
@@ -36,6 +38,7 @@ const upload = multer({
   },
   fileFilter: fileFilter
 });
+*/
 
 // Load Input Validation
 const validateRegisterInput = require("../../Validation/register");
@@ -60,7 +63,7 @@ router.get("/test", (req, res) => {
 // @route POST api/users/register
 // @desc Register users
 // @access Public
-router.post("/register", upload.single("creator_photo"), (req, res) => {
+router.post("/register", (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
@@ -90,13 +93,10 @@ router.post("/register", upload.single("creator_photo"), (req, res) => {
         // Creator
         creator_nickname: req.body.creator_nickname,
         creator_introduction: req.body.creator_introduction,
-        creator_photo: req.file.path,
+        creator_photo: req.body.path,
         product_delivery_address: req.body.product_delivery_address,
         product_delivery_recipient: req.body.product_delivery_recipient
       });
-
-      console.log(newUser.creator_photo);
-      console.log(newUser.company_photo);
 
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {

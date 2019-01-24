@@ -18,6 +18,29 @@ const ProfileSchema = new Schema({
   subscribers: {
     type: String
   },
+  average_views_per_video: {
+    type: String
+  },
+  montly_views: {
+    "age13-17": {
+      type: Number
+    },
+    "age18-24": {
+      type: Number
+    },
+    "age25-34": {
+      type: Number
+    },
+    "age35-44": {
+      type: Number
+    },
+    "age45-54": {
+      type: Number
+    },
+    "age65-": {
+      type: Number
+    }
+  },
   age_group: {
     "age13-17": {
       type: Number
