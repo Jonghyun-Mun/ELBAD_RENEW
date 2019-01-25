@@ -59,10 +59,10 @@ router.get("/all", (req, res) => {
     .catch(err => res.status(404).json({ profile: "There are no profiles" }));
 });
 
-// @route   Get api/profile/creator
+// @route   Get api/profile/getCreatorList
 // @desc    Get all profiles
 // @access  Public
-router.get("/creator", (req, res) => {
+router.get("/getCreatorList", (req, res) => {
   const errors = {};
   User.find(
     { user_type: "creator" },
@@ -75,7 +75,7 @@ router.get("/creator", (req, res) => {
       cell_phone_number: 1,
       creator_nickname: 1,
       creator_introduction: 1,
-      creator_photo: 1,
+      photo: 1,
       product_delivery_address: 1,
       product_delivery_recipient: 1
     }
@@ -286,9 +286,8 @@ router.get("/get_creator_list", (req, res) => {
       cell_phone_number: req.user.cell_phone_number,
 
       creator_nickname: req.user.creator_nickname,
-      creator_photo: req.user.creator_photo,
+      photo: req.user.photo,
       creator_introduction: req.user.creator_introduction,
-      creator_photo: req.user.creator_photo,
       product_delivery_address: req.user.product_delivery_address,
       product_delivery_recipient: req.user.product_delivery_recipient
       /*

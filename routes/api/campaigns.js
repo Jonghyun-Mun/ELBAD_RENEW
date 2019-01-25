@@ -36,7 +36,10 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("여기서 걸리니?");
+
     const { errors, isValid } = validateCampaignInput(req.body);
+    console.log("여기서 걸리니222?");
 
     // Check Validation
     if (!isValid) {
@@ -45,10 +48,27 @@ router.post(
     }
 
     const newCampaign = new Campaign({
-      // user 정보에서는 어떤 정보를 불러와야하나 생각생각생각생각 신한카드
-      text: req.body.text,
+      // new campaign 에서 입력받을 정보
+      campaign_title: req.body.campaign_title,
+      campaign_purpose: req.body.campaign_purpose,
+      campaign_type: req.body.campaign_type,
+      youtube: req.body.youtube,
+      twitter: req.body.twitter,
+      facebook: req.body.facebook,
+      instagram: req.body.instagram,
+      campaign_brand_introduction: req.body.campaign_brand_introduction,
+      product_name: req.body.product_name,
+      product_URL: req.body.product_URL,
+      product_photo: req.body.product_photo,
+      product_delivery: req.body.product_delivery,
+      gender: req.body.gender,
+      ages: req.body.ages,
+      countries: req.body.countries,
+      campaign_budget: req.body.campaign_budget,
+      // user 에서 불러올 정보
       name: req.user.name,
       user: req.user.id,
+      user_type: req.user.user_type,
       email: req.user.email,
       cell_phone_number: req.user.cell_phone_number
     });

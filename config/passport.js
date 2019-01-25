@@ -9,7 +9,6 @@ const opts = {};
 opts.jwtFromRequest = ExtraJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = keys.secretOrKey;
 
-/*
 module.exports = passport => {
   passport.use(
     new JwtStrategy(opts, (jwt_payload, done) => {
@@ -24,7 +23,8 @@ module.exports = passport => {
     })
   );
 };
-*/
+
+/*
 
 module.exports = function(passport, nev) {
   passport.use(
@@ -72,3 +72,4 @@ module.exports = function(passport, nev) {
     )
   );
 };
+*/

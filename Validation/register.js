@@ -30,7 +30,7 @@ module.exports = function validateRegisterInput(data) {
   data.creator_introduction = !isEmpty(data.creator_introduction)
     ? data.creator_introduction
     : "";
-  data.creator_photo = !isEmpty(data.creator_photo) ? data.creator_photo : "";
+  data.photo = !isEmpty(data.photo) ? data.photo : "";
   data.product_delivery_address = !isEmpty(data.product_delivery_address)
     ? data.product_delivery_address
     : "";

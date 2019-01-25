@@ -25,6 +25,9 @@ const UserSchema = new Schema({
   cell_phone_number: {
     type: String
   },
+  photo: {
+    type: String
+  },
   // Only Advertiser Schema
   company_name: {
     type: String
@@ -35,9 +38,6 @@ const UserSchema = new Schema({
   company_homepage: {
     type: String
   },
-  company_photo: {
-    type: String
-  },
   company_type: {
     type: String
   },
@@ -46,9 +46,6 @@ const UserSchema = new Schema({
     type: String
   },
   creator_introduction: {
-    type: String
-  },
-  creator_photo: {
     type: String
   },
   product_delivery_address: {

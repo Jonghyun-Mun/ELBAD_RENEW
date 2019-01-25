@@ -15,6 +15,15 @@ module.exports = function validateCampaignInput(data) {
     ? data.campaign_brand_introduction
     : "";
   data.product_name = !isEmpty(data.product_name) ? data.product_name : "";
+  data.product_URL = !isEmpty(data.product_URL) ? data.product_URL : "";
+  data.product_photo = !isEmpty(data.product_photo) ? data.product_photo : "";
+  data.product_delivery = !isEmpty(data.product_delivery)
+    ? data.product_delivery
+    : "";
+  data.target = !isEmpty(data.target) ? data.target : "";
+  data.campaign_budget = !isEmpty(data.campaign_budget)
+    ? data.campaign_budget
+    : "";
 
   if (!Validator.isLength(data.campaign_title, { min: 10, max: 100 })) {
     errors.campaign_title =
@@ -48,7 +57,7 @@ module.exports = function validateCampaignInput(data) {
 
   if (!isEmpty(data.product_URL)) {
     if (!Validator.isURL(data.product_URL)) {
-      errors.product_URL = "유효한 주소가 아닙니다.";
+      errors.product_URL = "유효한 주소 형식이 아닙니다.";
     }
   }
 

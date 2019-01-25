@@ -4,7 +4,16 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const multer = require("multer");
 
+const storage = multer.diskStorage({
+  destination: "./uploads/",
+  filename(req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  }
+});
+
+const upload = multer({ storage });
 /*
 // Image upload setting
 const multer = require("multer");
@@ -51,6 +60,13 @@ const User = require("../../models/User");
 // Load Profile model
 const Profile = require("../../models/Profile");
 
+// @route GET api/users/getPhoto/:email
+// @desc saving photo data name
+// @access Public
+router.get("/getPhoto/:name", (req, res) => {
+  res.sendFile("C:/Users/pc/Desktop/CAN/uploads/" + req.params.name);
+});
+
 // @route  GET api/Users/test
 // @desc   Tests user route
 // @access Public
@@ -63,10 +79,12 @@ router.get("/test", (req, res) => {
 // @route POST api/users/register
 // @desc Register users
 // @access Public
-router.post("/register", (req, res) => {
+router.post("/register", upload.single("photo"), (req, res) => {
+  console.log(req.file);
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
+    console.log("밸리데이션에러");
     return res.status(400).json(errors);
   }
 
@@ -75,7 +93,6 @@ router.post("/register", (req, res) => {
       errors.email = "이미 등록된 이메일입니다";
       return res.status(400).json(errors);
     } else {
-      console.log(req.file);
       const newUser = new User({
         // Common
         user_type: req.body.user_type,
@@ -84,16 +101,15 @@ router.post("/register", (req, res) => {
         password: req.body.password,
         meeting_region: req.body.meeting_region,
         cell_phone_number: req.body.cell_phone_number,
+        photo: req.file.filename,
         // Advertiser
         company_name: req.body.company_name,
         company_introduction: req.body.company_introduction,
         company_homepage: req.body.company_homepage,
-        company_photo: req.body.company_photo,
         company_type: req.body.company_type,
         // Creator
         creator_nickname: req.body.creator_nickname,
         creator_introduction: req.body.creator_introduction,
-        creator_photo: req.body.path,
         product_delivery_address: req.body.product_delivery_address,
         product_delivery_recipient: req.body.product_delivery_recipient
       });
@@ -179,11 +195,10 @@ router.get(
       company_name: req.user.company_name,
       company_introduction: req.user.company_introduction,
       company_homepage: req.user.company_homepage,
-      company_photo: req.user.company_photo,
+      photo: req.user.photo,
       company_type: req.user.company_type,
       creator_nickname: req.user.creator_nickname,
       creator_introduction: req.user.creator_introduction,
-      creator_photo: req.user.creator_photo,
       product_delivery_address: req.user.product_delivery_address,
       product_delivery_recipient: req.user.product_delivery_recipient
     });
@@ -224,6 +239,7 @@ router.put(
     reviseFields.meeting_region = req.body.meeting_region;
     if (req.body.cell_phone_number)
       reviseFields.cell_phone_number = req.body.cell_phone_number;
+    if (req.body.photo) reviseFields.photo = req.body.photo;
     // Advertiser
     if (req.body.company_name)
       reviseFields.company_name = req.body.company_name;
@@ -231,8 +247,6 @@ router.put(
       reviseFields.company_introduction = req.body.company_introduction;
     if (req.body.company_homepage)
       reviseFields.company_homepage = req.body.company_homepage;
-    if (req.body.company_photo)
-      reviseFields.company_photo = req.body.company_photo;
     if (req.body.company_type)
       reviseFields.company_type = req.body.company_type;
     // Creator
@@ -240,8 +254,7 @@ router.put(
       reviseFields.creator_nickname = req.body.creator_nickname;
     if (req.body.creator_introduction)
       reviseFields.creator_introduction = req.body.creator_introduction;
-    if (req.body.creator_photo)
-      reviseFields.creator_photo = req.body.creator_photo;
+
     if (req.body.product_delivery_address)
       reviseFields.product_delivery_address = req.body.product_delivery_address;
     if (req.body.product_delivery_recipient)
