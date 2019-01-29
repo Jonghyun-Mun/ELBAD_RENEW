@@ -47,7 +47,7 @@ const CampaignSchema = new Schema({
     required: true
   },
   product_delivery: {
-    type: Boolean,
+    type: String,
     required: true
   },
   // Ad target & budget
@@ -65,6 +65,10 @@ const CampaignSchema = new Schema({
   campaign_budget: {
     type: String,
     required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
   }
 });
 

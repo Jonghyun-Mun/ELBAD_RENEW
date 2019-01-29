@@ -28,6 +28,9 @@ const UserSchema = new Schema({
   photo: {
     type: String
   },
+  birthday: {
+    type: String
+  },
   // Only Advertiser Schema
   company_name: {
     type: String

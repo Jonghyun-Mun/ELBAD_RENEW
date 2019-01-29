@@ -36,10 +36,7 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    console.log("여기서 걸리니?");
-
     const { errors, isValid } = validateCampaignInput(req.body);
-    console.log("여기서 걸리니222?");
 
     // Check Validation
     if (!isValid) {

@@ -3,7 +3,6 @@ const isEmpty = require("./is-empty");
 
 module.exports = function validateCampaignInput(data) {
   let errors = {};
-
   data.campaign_title = !isEmpty(data.campaign_title)
     ? data.campaign_title
     : "";
@@ -24,12 +23,10 @@ module.exports = function validateCampaignInput(data) {
   data.campaign_budget = !isEmpty(data.campaign_budget)
     ? data.campaign_budget
     : "";
-
-  if (!Validator.isLength(data.campaign_title, { min: 10, max: 100 })) {
+  if (!Validator.isLength(data.campaign_title, { min: 5, max: 50 })) {
     errors.campaign_title =
-      "캠페인 제목은 반드시 10자이상 100자 이내여야 합니다.";
+      "캠페인 제목은 반드시 5자이상 50자 이내여야 합니다.";
   }
-
   if (Validator.isEmpty(data.campaign_title)) {
     errors.campaign_title = "공백은 허용되지 않습니다.";
   }
@@ -55,18 +52,22 @@ module.exports = function validateCampaignInput(data) {
     errors.product_name = "공백은 허용되지 않습니다.";
   }
 
-  if (!isEmpty(data.product_URL)) {
-    if (!Validator.isURL(data.product_URL)) {
-      errors.product_URL = "유효한 주소 형식이 아닙니다.";
-    }
+  if (Validator.isEmpty(data.product_URL)) {
+    errors.product_URL = "공백은 허용되지 않습니다.";
   }
-
+  if (!Validator.isURL(data.product_URL)) {
+    errors.product_URL = "유효한 주소 형식이 아닙니다.";
+  }
   if (Validator.isEmpty(data.product_photo)) {
     errors.product_photo = "공백은 허용되지 않습니다.";
   }
   if (Validator.isEmpty(data.product_delivery)) {
     errors.product_delivery = "공백은 허용되지 않습니다.";
   }
+  if (Validator.isEmpty(data.target)) {
+    errors.target = "공백은 허용되지 않습니다.";
+  }
+  /*
   if (Validator.isEmpty(data.gender)) {
     errors.gender = "타겟 성별을 선택해 주십시오.";
   }
@@ -76,6 +77,7 @@ module.exports = function validateCampaignInput(data) {
   if (Validator.isEmpty(data.countries)) {
     errors.countries = "타겟 국가를 선택해 주십시오.";
   }
+  */
   if (Validator.isEmpty(data.campaign_budget)) {
     errors.campaign_budget = "캠페인 예산을 선택해 주십시오.";
   }
