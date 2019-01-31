@@ -31,6 +31,13 @@ const UserSchema = new Schema({
   birthday: {
     type: String
   },
+  verification_code: {
+    type: Number
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  },
   // Only Advertiser Schema
   company_name: {
     type: String

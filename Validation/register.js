@@ -16,7 +16,7 @@ module.exports = function validateRegisterInput(data) {
   data.cell_phone_number = !isEmpty(data.cell_phone_number)
     ? data.cell_phone_number
     : "";
-  data.birthday = !isEmpty(data.birthday) ? data.birthday : "";
+  //  data.birthday = !isEmpty(data.birthday) ? data.birthday : "";
 
   //Advertiser
   data.company_name = !isEmpty(data.company_name) ? data.company_name : "";
@@ -82,10 +82,11 @@ module.exports = function validateRegisterInput(data) {
     if (Validator.isEmpty(data.cell_phone_number)) {
       errors.cell_phone_number = "핸드폰 번호를 입력해 주십시오";
     }
+    /*
     if (Validator.isEmpty(data.birthday)) {
       errors.birthday = "생년월일을 입력해주십시오";
     }
-
+*/
     return {
       errors,
       isValid: isEmpty(errors)

@@ -7,6 +7,14 @@ const passport = require("passport");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 
+const smtpTransport = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "info.elbad@gmail.com",
+    pass: "elba980320@"
+  }
+});
+
 const storage = multer.diskStorage({
   destination: "./uploads/",
   filename(req, file, cb) {
@@ -81,11 +89,12 @@ router.get("/test", (req, res) => {
 // @desc Register users
 // @access Public
 router.post("/register", upload.single("photo"), (req, res) => {
+  const rand = Math.floor(Math.random() * 1000000 + 54);
+  let mailOptions = {};
   console.log(req.file);
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
-    console.log("밸리데이션에러");
     return res.status(400).json(errors);
   }
 
@@ -104,6 +113,7 @@ router.post("/register", upload.single("photo"), (req, res) => {
         cell_phone_number: req.body.cell_phone_number,
         photo: req.file.filename,
         birthday: req.body.birthday,
+        verification_code: rand,
         // Advertiser
         company_name: req.body.company_name,
         company_introduction: req.body.company_introduction,
@@ -128,7 +138,52 @@ router.post("/register", upload.single("photo"), (req, res) => {
       });
     }
   });
+
+  mailOptions = {
+    to: req.body.email,
+    subject: "ELBAD 인증번호 발송 메일입니다.",
+    html: "안녕하세요 회원님 ELBAD 입니다 다음 인증번호를 입력해주세요" + rand
+  };
+  console.log(mailOptions);
+  smtpTransport.sendMail(mailOptions, function(error, response) {
+    if (error) {
+      console.log(error);
+      res.end("error");
+    } else {
+      console.log("Message sent: " + response.message);
+      res.end("sent");
+    }
+  });
 });
+
+// @route  POST api/users/verification
+// @desc   E-mail verification
+// @access Privite
+router.post(
+  "/verification",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    let errors = {};
+    console.log(req.user.verification_code);
+    console.log(req.user.verified);
+
+    if (
+      req.user.verification_code === parseInt(req.body.verification_code) &&
+      req.user.verified === false
+    ) {
+      console.log("오니?");
+      User.findOneAndUpdate(
+        { _id: req.user.id },
+        { $set: { verified: true } },
+        { new: true }
+      ).then(user => res.json(user));
+    } else {
+      errors.verification_code =
+        "인증번호가 유효하지 않거나 이미 인증된 계정입니다.";
+      return res.status(404).json(errors);
+    }
+  }
+);
 
 // @route  POST api/users/login
 // @desc   Login User / Returning JWT token
@@ -158,7 +213,9 @@ router.post("/login", (req, res) => {
         const payload = {
           id: user.id,
           name: user.name,
-          user_type: user.user_type
+          user_type: user.user_type,
+          photo: user.photo,
+          verified: user.verified
         }; // Create JWT payload
         // Sign Token
         jwt.sign(
