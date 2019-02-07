@@ -77,11 +77,102 @@ router.get("/getCreatorList", (req, res) => {
       creator_introduction: 1,
       photo: 1,
       product_delivery_address: 1,
-      product_delivery_recipient: 1
+      product_delivery_recipient: 1,
+      category: 1
     }
   ).then(users => {
     Profile.find()
       .then(profiles => {
+        if (!profiles) {
+          errors.noprofile = "There are no profiles";
+          return res.status(404).json(errors);
+        }
+        if (!users) {
+          errors.nouser = "there are no creators";
+          return res.status(404).json(errors);
+        }
+        res.json({ profiles, users });
+      })
+      .catch(err => res.status(404).json({ users: "there is no users" }));
+  });
+});
+
+// @route   post api/profile/search_by_nickname
+// @desc    search creator by nickname
+// @access  Public
+router.post("/search_by_nickname", (req, res) => {
+  const search_index = req.body.search_index;
+
+  const errors = {};
+  User.createIndexes({ creator_nickname: "text", category: "text" });
+  User.find(
+    { creator_nickname: { $regex: new RegExp(search_index) } },
+    {
+      _id: 1,
+      user_type: 1,
+      name: 1,
+      email: 1,
+      meeting_region: 1,
+      cell_phone_number: 1,
+      creator_nickname: 1,
+      creator_introduction: 1,
+      photo: 1,
+      product_delivery_address: 1,
+      product_delivery_recipient: 1,
+      category: 1
+    }
+  ).then(users => {
+    Profile.find()
+      .then(profiles => {
+        if (search_index === "") {
+          errors.nonickname = "There are no nickname";
+          return res.status(404).json(errors);
+        }
+        if (!profiles) {
+          errors.noprofile = "There are no profiles";
+          return res.status(404).json(errors);
+        }
+        if (!users) {
+          errors.nouser = "there are no creators";
+          return res.status(404).json(errors);
+        }
+        res.json({ profiles, users });
+      })
+      .catch(err => res.status(404).json({ users: "there is no users" }));
+  });
+});
+
+// @route   post api/profile/search_by_category
+// @desc    search creator by category
+// @access  Public
+router.post("/search_by_category", (req, res) => {
+  const search_index = req.body.search_index;
+
+  const errors = {};
+  User.createIndexes({ creator_nickname: "text", category: "text" });
+  User.find(
+    { category: { $regex: new RegExp(search_index) } },
+    {
+      _id: 1,
+      user_type: 1,
+      name: 1,
+      email: 1,
+      meeting_region: 1,
+      cell_phone_number: 1,
+      creator_nickname: 1,
+      creator_introduction: 1,
+      photo: 1,
+      product_delivery_address: 1,
+      product_delivery_recipient: 1,
+      category: 1
+    }
+  ).then(users => {
+    Profile.find()
+      .then(profiles => {
+        if (search_index === "") {
+          errors.nocategory = "There are no categories";
+          return res.status(404).json(errors);
+        }
         if (!profiles) {
           errors.noprofile = "There are no profiles";
           return res.status(404).json(errors);

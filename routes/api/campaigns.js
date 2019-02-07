@@ -29,6 +29,33 @@ router.get("/", (req, res) => {
     .catch(err => res.status(404).json({ nocampaignsfound: "No posts found" }));
 });
 
+// @route Get api/campaigns/pagination
+// @desc Get campaigns by pagination
+// @access Public
+router.get("/pagination", function(req, res) {
+  const page = Math.max(1, req.query.page);
+  const limit = 10;
+  Campaign.count({}, function(err, count) {
+    if (err) return res.json({ success: false, message: err });
+    const skip = (page - 1) * limit;
+    const maxPage = Math.cell(count / limit);
+    Campaign.find()
+      .populate("author")
+      .sort("-createdAt")
+      .skip(skip)
+      .limit(limit)
+      .exec(function(err, campaigns) {
+        if (err) return res.json({ success: false, message: err });
+        res.render("campaigns/index", {
+          campaigns: campaigns,
+          user: req.user,
+          page: page,
+          maxPage: maxPage
+        });
+      });
+  });
+});
+
 // @route   POST api/campaigns
 // @desc    Create campaigns
 // @access  Private

@@ -91,7 +91,6 @@ router.get("/test", (req, res) => {
 router.post("/register", upload.single("photo"), (req, res) => {
   const rand = Math.floor(Math.random() * 1000000 + 54);
   let mailOptions = {};
-  console.log(req.file);
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check Validation
   if (!isValid) {
@@ -123,7 +122,8 @@ router.post("/register", upload.single("photo"), (req, res) => {
         creator_nickname: req.body.creator_nickname,
         creator_introduction: req.body.creator_introduction,
         product_delivery_address: req.body.product_delivery_address,
-        product_delivery_recipient: req.body.product_delivery_recipient
+        product_delivery_recipient: req.body.product_delivery_recipient,
+        category: req.body.category
       });
 
       bcrypt.genSalt(10, (err, salt) => {
@@ -176,7 +176,27 @@ router.post(
         { _id: req.user.id },
         { $set: { verified: true } },
         { new: true }
-      ).then(user => res.json(user));
+      ).then(user => {
+        const payload = {
+          id: user.id,
+          name: user.name,
+          user_type: user.user_type,
+          photo: user.photo,
+          verified: user.verified
+        }; // Create JWT payload
+        // Sign Token
+        jwt.sign(
+          payload,
+          keys.secretOrKey,
+          { expiresIn: 3600 },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: "Bearer " + token
+            });
+          }
+        );
+      });
     } else {
       errors.verification_code =
         "인증번호가 유효하지 않거나 이미 인증된 계정입니다.";
@@ -259,7 +279,8 @@ router.get(
       creator_nickname: req.user.creator_nickname,
       creator_introduction: req.user.creator_introduction,
       product_delivery_address: req.user.product_delivery_address,
-      product_delivery_recipient: req.user.product_delivery_recipient
+      product_delivery_recipient: req.user.product_delivery_recipient,
+      category: req.user.category
     });
   }
 );
@@ -320,6 +341,7 @@ router.put(
     if (req.body.product_delivery_recipient)
       reviseFields.product_delivery_recipient =
         req.body.product_delivery_recipient;
+    if (req.body.category) reviseFields.category = req.body.category;
 
     bcrypt.genSalt(10, (err, salt) => {
       bcrypt.hash(reviseFields.password, salt, (err, hash) => {
@@ -358,6 +380,11 @@ router.post("/image", function(req, res, next) {
     }
   );
 });
+
+// @route Post api/users/search
+// @desc search data from datebase
+// @access Public
+router.post("/search");
 
 /* 크리에이터 리스트 캠페인 리스트 개발
 // @route  GET api/users/get_creator_list

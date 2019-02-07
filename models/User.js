@@ -53,7 +53,8 @@ const UserSchema = new Schema({
   },
   // Only Creator Schema
   creator_nickname: {
-    type: String
+    type: String,
+    text: true
   },
   creator_introduction: {
     type: String
@@ -63,6 +64,10 @@ const UserSchema = new Schema({
   },
   product_delivery_recipient: {
     type: String
+  },
+  category: {
+    type: String,
+    text: true
   }
 });
 
