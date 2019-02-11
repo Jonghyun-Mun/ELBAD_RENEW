@@ -280,7 +280,8 @@ router.get(
       creator_introduction: req.user.creator_introduction,
       product_delivery_address: req.user.product_delivery_address,
       product_delivery_recipient: req.user.product_delivery_recipient,
-      category: req.user.category
+      category: req.user.category,
+      birthday: req.user.birthday
     });
   }
 );
@@ -302,6 +303,7 @@ router.get(
 // @access Private
 router.put(
   "/edit_user",
+  upload.single("photo"),
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { errors, isValid } = validateReviseInput(req.body);
@@ -319,8 +321,14 @@ router.put(
     reviseFields.meeting_region = req.body.meeting_region;
     if (req.body.cell_phone_number)
       reviseFields.cell_phone_number = req.body.cell_phone_number;
-    if (req.body.photo) reviseFields.photo = req.body.photo;
+
     if (req.body.birthday) reviseFields.birthday = req.body.birthday;
+
+    if (req.body.image_changed === "true") {
+      if (req.file.filename) reviseFields.photo = req.file.filename;
+    } else {
+      if (req.body.photo) reviseFields.photo = req.body.photo;
+    }
     // Advertiser
     if (req.body.company_name)
       reviseFields.company_name = req.body.company_name;
@@ -354,6 +362,7 @@ router.put(
         //  .catch(err => console.log(err));
       });
     });
+
     // Update
 
     User.findOne({ _id: req.user.id }).then(user => {
@@ -362,7 +371,27 @@ router.put(
           { _id: req.user.id },
           { $set: reviseFields },
           { new: true }
-        ).then(user => res.json(user));
+        ).then(user => {
+          const payload = {
+            id: user.id,
+            name: reviseFields.name,
+            user_type: user.user_type,
+            photo: reviseFields.photo,
+            verified: user.verified
+          }; // Create JWT payload
+          // Sign Token
+          jwt.sign(
+            payload,
+            keys.secretOrKey,
+            { expiresIn: 3600 },
+            (err, token) => {
+              res.json({
+                success: true,
+                token: "Bearer " + token
+              });
+            }
+          );
+        });
       }
     });
   }

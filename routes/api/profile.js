@@ -391,4 +391,38 @@ router.get("/get_creator_list", (req, res) => {
   });
 });
 
+// @route Get/api/profile/pagination
+// @desc get creator info. through pagination
+// @access Public
+
+router.get("/pagination", (req, res) => {
+  const page = Math.max(1, req.query.page);
+  const limit = 1;
+
+  User.count({}, function(err, count) {
+    if (err) return res.json({});
+  });
+  //  Profile.findOne({ user: req.user.id }).then(profile =>
+  User.findOne({ user_type: "creator" }).then(user => {
+    res.json({
+      email: req.user.email,
+      name: req.user.name,
+      meeting_region: req.user.meeting_region,
+      cell_phone_number: req.user.cell_phone_number,
+
+      creator_nickname: req.user.creator_nickname,
+      photo: req.user.photo,
+      creator_introduction: req.user.creator_introduction,
+      product_delivery_address: req.user.product_delivery_address,
+      product_delivery_recipient: req.user.product_delivery_recipient
+      /*
+        total_views: req.profile.total_views,
+        subscribers: req.profile.subscribers,
+        age_group: req.profile.age_group,
+        country: req.profile.country,
+        gender: req.profile.gender */
+    });
+  });
+});
+
 module.exports = router;

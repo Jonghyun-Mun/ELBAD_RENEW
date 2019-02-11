@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const cors = require("cors");

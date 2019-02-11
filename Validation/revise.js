@@ -15,6 +15,7 @@ module.exports = function validateReviseInput(data) {
     ? data.cell_phone_number
     : "";
   data.birthday = !isEmpty(data.birthday) ? data.birthday : "";
+  data.photo = !isEmpty(data.photo) ? data.photo : "";
 
   //Advertiser
   data.company_name = !isEmpty(data.company_name) ? data.company_name : "";
