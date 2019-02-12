@@ -40,8 +40,7 @@ router.get("/pagination", function(req, res) {
     const skip = (page - 1) * limit;
     const maxPage = Math.cell(count / limit);
     Campaign.find()
-      .populate("author")
-      .sort("-createdAt")
+
       .skip(skip)
       .limit(limit)
       .exec(function(err, campaigns) {

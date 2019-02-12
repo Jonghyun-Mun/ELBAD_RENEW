@@ -391,37 +391,51 @@ router.get("/get_creator_list", (req, res) => {
   });
 });
 
-// @route Get/api/profile/pagination
+// @route Get/api/profile/pagination_creator
 // @desc get creator info. through pagination
 // @access Public
 
-router.get("/pagination", (req, res) => {
-  const page = Math.max(1, req.query.page);
-  const limit = 1;
+router.get("/pagination_creator", (req, res) => {
+  const page = Math.max(1, req.body.page);
+  const limit = 2;
 
-  User.count({}, function(err, count) {
-    if (err) return res.json({});
-  });
-  //  Profile.findOne({ user: req.user.id }).then(profile =>
-  User.findOne({ user_type: "creator" }).then(user => {
-    res.json({
-      email: req.user.email,
-      name: req.user.name,
-      meeting_region: req.user.meeting_region,
-      cell_phone_number: req.user.cell_phone_number,
+  User.find({ user_type: "creator" }).count({}, function(err, count) {
+    if (err) return res.json({ sucess: false, message: err });
 
-      creator_nickname: req.user.creator_nickname,
-      photo: req.user.photo,
-      creator_introduction: req.user.creator_introduction,
-      product_delivery_address: req.user.product_delivery_address,
-      product_delivery_recipient: req.user.product_delivery_recipient
-      /*
+    const skip = (page - 1) * limit;
+    const maxPage = Math.ceil(count / limit);
+
+    //  Profile.find({ user: req.user.id }).then(profile =>
+    User.find({ user_type: "creator" })
+      .skip(skip)
+      .limit(limit)
+      .exec(function(err, users) {
+        if (err) {
+          return res.json({ success: false });
+        } else {
+          res.json({
+            users: users,
+            page: page,
+            maxPage: maxPage,
+            email: users.email,
+            name: users.name,
+            meeting_region: users.meeting_region,
+            cell_phone_number: users.cell_phone_number,
+
+            creator_nickname: users.creator_nickname,
+            photo: users.photo,
+            creator_introduction: users.creator_introduction,
+            product_delivery_address: users.product_delivery_address,
+            product_delivery_recipient: users.product_delivery_recipient
+            /*
         total_views: req.profile.total_views,
         subscribers: req.profile.subscribers,
         age_group: req.profile.age_group,
         country: req.profile.country,
         gender: req.profile.gender */
-    });
+          });
+        }
+      });
   });
 });
 
